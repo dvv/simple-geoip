@@ -1,0 +1,18 @@
+#!/usr/local/bin/coffee
+'use strict'
+
+getLocation = require('./index') './GeoLiteCity.dat'
+
+console.log getLocation '80.246.64.6', true
+console.log getLocation '79.171.11.94', true
+console.log getLocation '212.119.127.33', true
+console.log getLocation '121.11.127.33', false
+process.exit 0
+
+assert = require 'assert'
+n255 = -> Math.floor Math.random()*256
+for i in [0...10000]
+	ip = n255() + '.' + n255() + '.' + n255() + '.' + n255()
+	vanilla = geo.getCountry ip, 'id'
+	mine = getCountry ip
+	assert.deepEqual vanilla, mine, "vanilla: #{vanilla}, mine: #{mine}, ip: #{ip}"
