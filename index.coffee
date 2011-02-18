@@ -100,6 +100,65 @@ GEOIP_COUNTRY_NAMES = [
 	"Aland Islands","Guernsey","Isle of Man","Jersey","Saint Barthelemy","Saint Martin"
 ]
 
+GEOIP_COUNTRY_CONTINENTS = [
+	"--","AS","EU","EU","AS","AS","SA","SA","EU","AS","SA",
+	"AF","AN","SA","OC","EU","OC","SA","AS","EU","SA",
+	"AS","EU","AF","EU","AS","AF","AF","SA","AS","SA",
+	"SA","SA","AS","AF","AF","EU","SA","NA","AS","AF",
+	"AF","AF","EU","AF","OC","SA","AF","AS","SA","SA",
+	"SA","AF","AS","AS","EU","EU","AF","EU","SA","SA",
+	"AF","SA","EU","AF","AF","AF","EU","AF","EU","OC",
+	"SA","OC","EU","EU","EU","AF","EU","SA","AS","SA",
+	"AF","EU","SA","AF","AF","SA","AF","EU","SA","SA",
+	"OC","AF","SA","AS","AF","SA","EU","SA","EU","AS",
+	"EU","AS","AS","AS","AS","AS","EU","EU","SA","AS",
+	"AS","AF","AS","AS","OC","AF","SA","AS","AS","AS",
+	"SA","AS","AS","AS","SA","EU","AS","AF","AF","EU",
+	"EU","EU","AF","AF","EU","EU","AF","OC","EU","AF",
+	"AS","AS","AS","OC","SA","AF","SA","EU","AF","AS",
+	"AF","NA","AS","AF","AF","OC","AF","OC","AF","SA",
+	"EU","EU","AS","OC","OC","OC","AS","SA","SA","OC",
+	"OC","AS","AS","EU","SA","OC","SA","AS","EU","OC",
+	"SA","AS","AF","EU","AS","AF","AS","OC","AF","AF",
+	"EU","AS","AF","EU","EU","EU","AF","EU","AF","AF",
+	"SA","AF","SA","AS","AF","SA","AF","AF","AF","AS",
+	"AS","OC","AS","AF","OC","AS","AS","SA","OC","AS",
+	"AF","EU","AF","OC","NA","SA","AS","EU","SA","SA",
+	"SA","SA","AS","OC","OC","OC","AS","AF","EU","AF",
+	"AF","EU","AF","--","--","--","EU","EU","EU","EU",
+  "SA","SA"]
+
+GEOIP_CONTINENT_NAMES =
+	AF: "Africa"
+	AS: "Asia"
+	EU: "Europe"
+	NA: "North America"
+	OC: "Oceania"
+	SA: "South America"
+
+GEOIP_TIMEZONES = require "./timezone"
+
+#
+# combined records
+#
+GEOIP_COUNTRY = {}
+GEOIP_COUNTRY_CODES.forEach (code, id) ->
+	rec =
+		id: code
+		iso2: code
+		iso3: GEOIP_COUNTRY_CODES3[id]
+		name: GEOIP_COUNTRY_NAMES[id]
+		cont: GEOIP_COUNTRY_CONTINENTS[id]
+		cont_name: GEOIP_CONTINENT_NAMES[GEOIP_COUNTRY_CONTINENTS[id]]
+		tz: []
+	Object.keys(GEOIP_TIMEZONES).forEach (tag) ->
+		if tag is code or tag.substr(0,2) is code
+			rec.tz.push GEOIP_TIMEZONES[tag] unless rec.tz.indexOf(GEOIP_TIMEZONES[tag]) >= 0
+	GEOIP_COUNTRY[code] = rec
+console.log JSON.stringify GEOIP_COUNTRY
+
+GEOIP_REGION = {}
+
 #
 # maxmind DB
 #
@@ -156,18 +215,32 @@ getLocation = (ipaddr, full) ->
 	return id unless full
 
 	# compose country stuff
+	code = GEOIP_COUNTRY_CODES[id]
 	record =
-		id: id
-		country_code: GEOIP_COUNTRY_CODES[id]
+		country_code: code
 		country_code3: GEOIP_COUNTRY_CODES3[id]
 		country_name: GEOIP_COUNTRY_NAMES[id]
+		continent_code: GEOIP_COUNTRY_CONTINENTS[id]
+		continent_name: GEOIP_CONTINENT_NAMES[GEOIP_COUNTRY_CONTINENTS[id]]
 
 	# mixin additional info, if available
 	if GEOIP_TYPE > 1
 		# region name
 		b = e = offset + 1
 		e++ while buffer[e]
-		record.region_name = buffer.toString 'utf8', b, e
+		record.region_code = buffer.toString 'utf8', b, e
+		if full
+			rc1 = buffer[b]
+			rc2 = buffer[b+1]
+			if 48 <= rc1 < 58 and 48 <= rc2 < 58
+				region_code = (rc1 - 48 ) * 10 + rc2 - 48
+			else if 65 <= rc1 <= 90 or 48 <= rc1 < 58 and 65 <= rc2 <= 90 or 48 <= rc2 < 58
+				region_code = (rc1 - 48) * (65 + 26 - 48) + rc2 - 48 + 100
+			#record.region_name = GEOIP_REGION[region_code] if region_code
+			record.region_name = region_code if region_code
+		# timezone
+		if full
+			record.tz = GEOIP_TIMEZONES[code + record.region_code] or GEOIP_TIMEZONES[code]
 		# city name
 		b = e = e + 1
 		e++ while buffer[e]
@@ -186,11 +259,12 @@ getLocation = (ipaddr, full) ->
 		record.longitude = (n/10000.0).toFixed(6) - 180
 		# finer location, if available
 		if GEOIP_TYPE is 2
-			#if record.country_code is 'US'
-			if id is 225 # US
+			if record.country_code is 'US'
 				n = buffer[b] + (buffer[b + 1] << 8) + (buffer[b + 2] << 16)
+				b += 3
 				record.dma_code = record.metro_code = Math.floor n / 1000
 				record.area_code = n % 1000
+				n = buffer[b] + (buffer[b + 1] << 8) + (buffer[b + 2] << 16)
 
 	#
 	record
@@ -222,4 +296,7 @@ module.exports = (filename = "./GeoIP.dat") ->
 	#console.log GEOIP_TYPE, GEOIP_COUNTRY_BEGIN, GEOIP_RECORD_LEN
 
 	# export lookup function
-	getLocation
+	return {
+		lookupByIP: getLocation
+		countries: GEOIP_COUNTRY
+	}

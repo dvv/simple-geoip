@@ -1,0 +1,78 @@
+#!/bin/sh
+
+countries() {
+
+awk '
+
+BEGIN {
+	arr = ""
+	buf = ""
+	print "module.exports ="
+}
+
+/^const char (\* )?GeoIP_country_/ {
+	arr = $0
+	i = index(arr, "_country_")
+	if (i) {
+		arr = substr(arr, i+9)
+		i = index(arr, "[")
+		arr = substr(arr, 1, i-1)
+	}
+	buf = ""
+}
+
+/\}\;$/ {
+	buf = buf $0
+	gsub(/.*{/, "", buf)
+	gsub(/};/, "", buf)
+	gsub(/	/, "", buf)
+	print arr, buf
+	arr = ""
+}
+
+{
+	if (arr) {
+		buf = buf $0
+	}
+}
+
+END {
+}
+
+' < geoip/GeoIP.c
+
+}
+
+timezones() {
+
+awk '
+
+BEGIN {
+	country = ""
+	region = ""
+	print "module.exports ="
+}
+
+/strcmp \(country\, "([A-Z]+)"\)/ {
+	if (country) s = $6; else s = $5
+	country = substr(s,2,2)
+	region = ""
+}
+/strcmp \(region\, \"([A-Z0-9]+)\"\)/ {
+	if (region) s = $6; else s = $5
+	region = substr(s,2,2)
+}
+/timezone = "/ {
+	print "	\"" country region "\": \"" substr($3,2,length($3)-3) "\""
+}
+
+END {
+}
+
+' < geoip/timeZone.c
+
+}
+
+
+countries > country.coffee
+timezones > timezone.coffee

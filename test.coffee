@@ -1,12 +1,13 @@
 #!/usr/local/bin/coffee
 'use strict'
 
-getLocation = require('./index') './GeoLiteCity.dat'
+getLocation = require('./index')('./GeoLiteCity.dat').lookupByIP
+#getLocation = require('./index')('./GeoIP.dat').lookupByIP
 
 console.log getLocation '80.246.64.6', true
 console.log getLocation '79.171.11.94', true
-console.log getLocation '212.119.127.33', true
-console.log getLocation '121.11.127.33', false
+console.log getLocation '222.119.227.33', true
+console.log getLocation '121.11.127.33', true
 process.exit 0
 
 assert = require 'assert'
