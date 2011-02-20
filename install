@@ -26,7 +26,9 @@ BEGIN {
 	gsub(/.*{/, "", buf)
 	gsub(/};/, "", buf)
 	gsub(/	/, "", buf)
-	print arr, buf
+	if (arr) {
+		print "	\"" arr "\": [" buf "]"
+	}
 	arr = ""
 }
 
@@ -73,6 +75,11 @@ END {
 
 }
 
+#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 
-countries > country.coffee
-timezones > timezone.coffee
+mkdir -p build && \
+	wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz && \
+	wget http://geolite.maxmind.com/download/geoip/api/c/test/GeoIP-1.4.7beta10.tar.gz
+
+#countries > country.coffee
+#timezones > timezone.coffee
