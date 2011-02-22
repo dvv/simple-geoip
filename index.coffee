@@ -84,11 +84,12 @@ getLocation = (ipaddr, full) ->
 		id = buffer[offset]
 		#console.log id + GEOIP_COUNTRY_BEGIN, offset
 
-	# return just id unless `full` is truthy
-	return id unless full
-
 	# compose country stuff
 	code = GEOIP.code[id]
+
+	# return just code unless `full` is truthy
+	return code unless full
+
 	record =
 		country_code: code
 		country_code3: GEOIP.code3[id]
@@ -168,7 +169,7 @@ module.exports = (filename = "./GeoIP.dat") ->
 
 	#console.log GEOIP_TYPE, GEOIP_COUNTRY_BEGIN, GEOIP_RECORD_LEN
 
-	# export lookup function
+	# export lookup function and collected country info
 	return {
 		lookupByIP: getLocation
 		countries: GEOIP_COUNTRY
