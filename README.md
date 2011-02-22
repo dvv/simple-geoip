@@ -10,7 +10,7 @@ A pure coffeescript implementation of the [maxmind](http://geolite.maxmind.com/d
 
 ## JSON feed
 
-You can use precompiled geo info by fetching it directly from [here](https://github.com/dvv/simple-geoip/master/raw/geo.json).
+You can use precompiled geo info by fetching it directly from [here](https://github.com/dvv/simple-geoip/raw/master/geo.json).
 
 ## License
 
