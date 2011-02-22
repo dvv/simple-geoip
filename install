@@ -41,7 +41,7 @@ BEGIN {
 END {
 }
 
-' < geoip/GeoIP.c
+'
 
 }
 
@@ -71,15 +71,25 @@ BEGIN {
 END {
 }
 
-' < geoip/timeZone.c
+'
 
 }
 
-#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
-
-mkdir -p build && \
-	wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz && \
-	wget http://geolite.maxmind.com/download/geoip/api/c/test/GeoIP-1.4.7beta10.tar.gz
-
-#countries > country.coffee
-#timezones > timezone.coffee
+(
+	if ! test -f GeoLiteCity.dat; then
+		wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+		gunzip GeoLiteCity.dat.gz
+	fi
+	mkdir -p build
+	cd build
+	# fetch libGeoIP sources
+	V=1.4.7beta10
+	if ! test -f GeoIP-$V/libGeoIP/GeoIP.c; then
+		wget http://geolite.maxmind.com/download/geoip/api/c/test/GeoIP-$V.tar.gz
+		tar -xzpf GeoIP-$V
+	fi
+	# extract info
+	countries <GeoIP-$V/libGeoIP/GeoIP.c >../country.coffee
+	timezones <GeoIP-$V/libGeoIP/timeZone.c >../timezone.coffee
+	# TODO: parse also regionName.c
+)

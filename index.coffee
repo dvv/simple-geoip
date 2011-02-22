@@ -28,7 +28,7 @@ GEOIP.code.forEach (code, id) ->
 		if tag is code or tag.substr(0,2) is code
 			rec.tz.push GEOIP_TIMEZONES[tag] unless rec.tz.indexOf(GEOIP_TIMEZONES[tag]) >= 0
 	GEOIP_COUNTRY[code] = rec
-console.log JSON.stringify GEOIP_COUNTRY
+#console.log JSON.stringify GEOIP_COUNTRY
 
 GEOIP_REGION = {}
 
@@ -88,13 +88,13 @@ getLocation = (ipaddr, full) ->
 	return id unless full
 
 	# compose country stuff
-	code = GEOIP_COUNTRY_CODES[id]
+	code = GEOIP.code[id]
 	record =
 		country_code: code
-		country_code3: GEOIP_COUNTRY_CODES3[id]
-		country_name: GEOIP_COUNTRY_NAMES[id]
-		continent_code: GEOIP_COUNTRY_CONTINENTS[id]
-		continent_name: GEOIP_CONTINENT_NAMES[GEOIP_COUNTRY_CONTINENTS[id]]
+		country_code3: GEOIP.code3[id]
+		country_name: GEOIP.name[id]
+		continent_code: GEOIP.continent[id]
+		continent_name: GEOIP_CONTINENT_NAMES[GEOIP.continent[id]]
 
 	# mixin additional info, if available
 	if GEOIP_TYPE > 1
