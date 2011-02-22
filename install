@@ -75,6 +75,42 @@ END {
 
 }
 
+currencies() {
+
+awk '
+
+BEGIN {
+	done = 0
+	code = ""
+	num = ""
+	name = ""
+	print "module.exports ="
+}
+/		letter_code="([A-Z]+)"/ {
+	code = substr($1,14,3)
+}
+/		numeric_code="([0-9]+)"/ {
+	num = substr($1,15,3)
+}
+/		currency_name="([^"]+)"/ {
+	name = substr($0,18)
+	i = index(name, "\"")
+	name = substr(name,1,i-1)
+	if (!done) {
+		print "	\"" code "\": {id: \"" code "\", code: \"" num "\", name: \"" name "\"}"
+	}
+}
+/historic_iso_4217_entry/ {
+	if (code) done = 1
+}
+
+END {
+}
+
+'
+
+}
+
 (
 	if ! test -f GeoLiteCity.dat; then
 		wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
@@ -88,13 +124,23 @@ END {
 		wget http://geolite.maxmind.com/download/geoip/api/c/test/GeoIP-$V.tar.gz
 		tar -xzpf GeoIP-$V
 	fi
+	# fetch currencies
+	if ! test -f iso4217.xml; then
+		wget -q https://bitbucket.org/victorlin/correct_pycountry/raw/a144b415d051/src/pycountry/databases/iso4217.xml
+	fi
 	cd ..
 	# extract info
-	countries <build/GeoIP-$V/libGeoIP/GeoIP.c >country.coffee
-	timezones <build/GeoIP-$V/libGeoIP/timeZone.c >timezone.coffee
+	#countries <build/GeoIP-$V/libGeoIP/GeoIP.c >country.coffee
+	#timezones <build/GeoIP-$V/libGeoIP/timeZone.c >timezone.coffee
 	# TODO: parse also regionName.c
+	# TODO: bind languages?, currencies?
 	# ...
-	# 
+	#
+	currencies <build/iso4217.xml >currency.coffee
 	# make the first run
-	coffee index.coffee
+	#coffee index.coffee
 )
+
+#
+# ftp://elsie.nci.nih.gov/pub/tz{code,data}2011b.tar.gz
+#
