@@ -12,7 +12,7 @@ console.log getLocation '121.11.127.33', true
 
 assert = require 'assert'
 n255 = -> Math.floor Math.random()*256
-for i in [0...10000]
+for i in [0...100]
 	ip = n255() + '.' + n255() + '.' + n255() + '.' + n255()
 	#vanilla = geo.getCountry ip, 'id'
 	mine = getLocation ip, true

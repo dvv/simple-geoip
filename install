@@ -88,8 +88,13 @@ END {
 		wget http://geolite.maxmind.com/download/geoip/api/c/test/GeoIP-$V.tar.gz
 		tar -xzpf GeoIP-$V
 	fi
+	cd ..
 	# extract info
-	countries <GeoIP-$V/libGeoIP/GeoIP.c >../country.coffee
-	timezones <GeoIP-$V/libGeoIP/timeZone.c >../timezone.coffee
+	countries <build/GeoIP-$V/libGeoIP/GeoIP.c >country.coffee
+	timezones <build/GeoIP-$V/libGeoIP/timeZone.c >timezone.coffee
 	# TODO: parse also regionName.c
+	# ...
+	# 
+	# make the first run
+	coffee index.coffee
 )

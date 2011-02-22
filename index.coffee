@@ -2,6 +2,7 @@
 
 GEOIP_CONTINENT_NAMES =
 	AF: "Africa"
+	AN: "Antarctica"
 	AS: "Asia"
 	EU: "Europe"
 	NA: "North America"
@@ -16,6 +17,7 @@ GEOIP_TIMEZONES = require "./timezone"
 #
 GEOIP_COUNTRY = {}
 GEOIP.code.forEach (code, id) ->
+	# put country record
 	rec =
 		id: code
 		iso2: code
@@ -27,9 +29,17 @@ GEOIP.code.forEach (code, id) ->
 	Object.keys(GEOIP_TIMEZONES).forEach (tag) ->
 		if tag is code or tag.substr(0,2) is code
 			rec.tz.push GEOIP_TIMEZONES[tag] unless rec.tz.indexOf(GEOIP_TIMEZONES[tag]) >= 0
-	GEOIP_COUNTRY[code] = rec
-#console.log JSON.stringify GEOIP_COUNTRY
+	# N.B. we filter quirky records
+	if rec.iso3.length is 3
+		GEOIP_COUNTRY[code] = rec
+#
+# dump records as JSON
+#
+require('fs').writeFile 'geo.json', JSON.stringify GEOIP_COUNTRY
 
+#
+# TODO:
+#
 GEOIP_REGION = {}
 
 #
@@ -143,7 +153,7 @@ getLocation = (ipaddr, full) ->
 	#
 	record
 
-module.exports = (filename = "./GeoIP.dat") ->
+module.exports = (filename = __dirname + "/GeoLiteCity.dat") ->
 
 	# load db
 	buffer = require('fs').readFileSync filename
