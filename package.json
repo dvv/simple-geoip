@@ -1,0 +1,12 @@
+{
+  "name"          : "simple-geoip",
+  "description"   : "A pure JavaScript fast lookup in maxmind GeoIP database",
+  "url"           : "https://github.com/dvv/simple-geoip/",
+  "keywords"      : ["geo", "geoip", "maxmind", "pure", "javascript"],
+  "author"        : "Vladimir Dronnikov <dronnikov@gmail.com>",
+  "contributors"  : [],
+  "dependencies"  : [],
+  "lib"           : "lib",
+  "main"          : "index.js",
+  "version"       : "0.0.1"
+}

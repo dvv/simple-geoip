@@ -113,32 +113,33 @@ END {
 
 (
 	if ! test -f GeoLiteCity.dat; then
-		wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-		gunzip GeoLiteCity.dat.gz
+		wget -t3 -c http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz -O GeoLiteCity.dat.part && mv GeoLiteCity.dat.part GeoLiteCity.dat.gz && gunzip GeoLiteCity.dat.gz
 	fi
 	mkdir -p build
 	cd build
 	# fetch libGeoIP sources
-	V=1.4.7beta10
+	V=1.4.7beta11
 	if ! test -f GeoIP-$V/libGeoIP/GeoIP.c; then
-		wget http://geolite.maxmind.com/download/geoip/api/c/test/GeoIP-$V.tar.gz
-		tar -xzpf GeoIP-$V
+		wget -t3 -c http://geolite.maxmind.com/download/geoip/api/c/test/GeoIP-$V.tar.gz
+		tar -xzpf GeoIP-$V.tar.gz
 	fi
 	# fetch currencies
 	if ! test -f iso4217.xml; then
-		wget -q https://bitbucket.org/victorlin/correct_pycountry/raw/a144b415d051/src/pycountry/databases/iso4217.xml
+		wget -t3 -c https://bitbucket.org/victorlin/correct_pycountry/raw/a144b415d051/src/pycountry/databases/iso4217.xml
 	fi
 	cd ..
 	# extract info
-	#countries <build/GeoIP-$V/libGeoIP/GeoIP.c >country.coffee
-	#timezones <build/GeoIP-$V/libGeoIP/timeZone.c >timezone.coffee
+	countries <build/GeoIP-$V/libGeoIP/GeoIP.c >src/country.coffee
+	timezones <build/GeoIP-$V/libGeoIP/timeZone.c >src/timezone.coffee
 	# TODO: parse also regionName.c
 	# TODO: bind languages?, currencies?
 	# ...
 	#
-	currencies <build/iso4217.xml >currency.coffee
-	# make the first run
-	#coffee index.coffee
+	currencies <build/iso4217.xml >src/currency.coffee
+	# make the first run to get geo.json
+	coffee src/index.coffee
+	# compile coffee to js
+	coffee -bc -o lib src/*
 )
 
 #

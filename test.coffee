@@ -1,8 +1,8 @@
 #!/usr/local/bin/coffee
 'use strict'
 
-getLocation = require('./index')('./GeoLiteCity.dat').lookupByIP
-#getLocation = require('./index')('./GeoIP.dat').lookupByIP
+getLocation = require('./lib/index')('./GeoLiteCity.dat').lookupByIP
+#getLocation = require('./lib/index')('./GeoIP.dat').lookupByIP
 
 console.log getLocation '80.246.64.6', true
 console.log getLocation '79.171.11.94', true

@@ -159,7 +159,7 @@ module.exports = (filename = __dirname + "/GeoLiteCity.dat") ->
 	buffer = require('fs').readFileSync filename
 	buflen = buffer.length
 	#
-	console.log "DB #{filename} loaded (length = #{buflen})"
+	console.error "DB #{filename} loaded (length = #{buflen})"
 
 	# determine db type, offsets and record length
 	for i in [0..19]

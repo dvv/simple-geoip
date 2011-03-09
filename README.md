@@ -1,6 +1,6 @@
 # simple-geoip 0.1.0
 
-A pure coffeescript implementation of the [maxmind](http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz) [libGeoIP](http://geolite.maxmind.com/download/geoip/api/c/test).
+A fast JS implementation of the [maxmind](http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz) [libGeoIP](http://geolite.maxmind.com/download/geoip/api/c/test).
 
 ## Install
 
