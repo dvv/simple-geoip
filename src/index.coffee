@@ -153,7 +153,7 @@ getLocation = (ipaddr, full) ->
 	#
 	record
 
-module.exports = (filename = __dirname + "/GeoLiteCity.dat") ->
+module.exports = (filename = __dirname + "/../GeoLiteCity.dat") ->
 
 	# load db
 	buffer = require('fs').readFileSync filename
