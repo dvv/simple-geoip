@@ -1,3 +1,2 @@
-build
-GeoIP.dat
-GeoLiteCity.dat
+.build
+Geo*.dat

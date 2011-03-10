@@ -115,8 +115,8 @@ END {
 	if ! test -f GeoLiteCity.dat; then
 		wget -t3 -c http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz -O GeoLiteCity.dat.part && mv GeoLiteCity.dat.part GeoLiteCity.dat.gz && gunzip GeoLiteCity.dat.gz
 	fi
-	mkdir -p build
-	cd build
+	mkdir -p .build
+	cd .build
 	# fetch libGeoIP sources
 	V=1.4.7beta11
 	if ! test -f GeoIP-$V/libGeoIP/GeoIP.c; then
@@ -129,13 +129,13 @@ END {
 	fi
 	cd ..
 	# extract info
-	countries <build/GeoIP-$V/libGeoIP/GeoIP.c >src/country.coffee
-	timezones <build/GeoIP-$V/libGeoIP/timeZone.c >src/timezone.coffee
+	countries <.build/GeoIP-$V/libGeoIP/GeoIP.c >src/country.coffee
+	timezones <.build/GeoIP-$V/libGeoIP/timeZone.c >src/timezone.coffee
 	# TODO: parse also regionName.c
 	# TODO: bind languages?, currencies?
 	# ...
 	#
-	currencies <build/iso4217.xml >src/currency.coffee
+	currencies <.build/iso4217.xml >src/currency.coffee
 	# make the first run to get geo.json
 	coffee src/index.coffee
 	# compile coffee to js
