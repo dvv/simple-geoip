@@ -33,7 +33,6 @@ GEOIP.code.forEach(function(code, id) {
     return GEOIP_COUNTRY[code] = rec;
   }
 });
-require('fs').writeFile('geo.json', JSON.stringify(GEOIP_COUNTRY));
 GEOIP_REGION = {};
 buffer = null;
 GEOIP_TYPE = 1;
@@ -142,38 +141,33 @@ getLocation = function(ipaddr, full) {
   }
   return record;
 };
-module.exports = function(filename) {
-  var buflen, i, pos;
-  if (filename == null) {
-    filename = __dirname + "/../GeoLiteCity.dat";
-  }
-  buffer = require('fs').readFileSync(filename);
-  buflen = buffer.length;
-  console.error("DB " + filename + " loaded (length = " + buflen + ")");
-  for (i = 0; i <= 19; i++) {
-    pos = buflen - i - 3;
-    if (buffer[pos] === 255 && buffer[pos + 1] === 255 && buffer[pos + 2] === 255) {
-      GEOIP_TYPE = buffer[pos + 3];
-      if (GEOIP_TYPE >= 106) {
-        GEOIP_TYPE -= 105;
-      }
-      if (GEOIP_TYPE === 7) {
-        GEOIP_COUNTRY_BEGIN = 16700000;
-      }
-      if (GEOIP_TYPE === 3) {
-        GEOIP_COUNTRY_BEGIN = 16000000;
-      }
-      if (GEOIP_TYPE === 2 || GEOIP_TYPE === 4 || GEOIP_TYPE === 5 || GEOIP_TYPE === 6 || GEOIP_TYPE === 9) {
-        GEOIP_COUNTRY_BEGIN = buffer[pos + 4] + (buffer[pos + 5] << 8) + (buffer[pos + 6] << 16);
-        if (GEOIP_TYPE === 4 || GEOIP_TYPE === 5) {
-          GEOIP_RECORD_LEN = 4;
-          seekCountry = seekCountry4;
-        }
+
+buffer = require("../GeoLiteCity.dat");
+var buflen = buffer.length;
+
+for (var i = 0; i <= 19; i++) {
+  var pos = buflen - i - 3;
+  if (buffer[pos] === 255 && buffer[pos + 1] === 255 && buffer[pos + 2] === 255) {
+    GEOIP_TYPE = buffer[pos + 3];
+    if (GEOIP_TYPE >= 106) {
+      GEOIP_TYPE -= 105;
+    }
+    if (GEOIP_TYPE === 7) {
+      GEOIP_COUNTRY_BEGIN = 16700000;
+    }
+    if (GEOIP_TYPE === 3) {
+      GEOIP_COUNTRY_BEGIN = 16000000;
+    }
+    if (GEOIP_TYPE === 2 || GEOIP_TYPE === 4 || GEOIP_TYPE === 5 || GEOIP_TYPE === 6 || GEOIP_TYPE === 9) {
+      GEOIP_COUNTRY_BEGIN = buffer[pos + 4] + (buffer[pos + 5] << 8) + (buffer[pos + 6] << 16);
+      if (GEOIP_TYPE === 4 || GEOIP_TYPE === 5) {
+        GEOIP_RECORD_LEN = 4;
+        seekCountry = seekCountry4;
       }
     }
   }
-  return {
-    lookupByIP: getLocation,
-    countries: GEOIP_COUNTRY
-  };
-};
+}
+
+exports.lookupByIP = getLocation;
+
+exports.countries = GEOIP_COUNTRY;

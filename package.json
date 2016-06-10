@@ -1,12 +1,25 @@
 {
-  "name"          : "simple-geoip",
-  "description"   : "A pure JavaScript fast lookup in maxmind GeoIP database",
-  "url"           : "https://github.com/dvv/simple-geoip/",
-  "keywords"      : ["geo", "geoip", "maxmind", "pure", "javascript"],
-  "author"        : "Vladimir Dronnikov <dronnikov@gmail.com>",
-  "contributors"  : [],
-  "dependencies"  : [],
-  "lib"           : "lib",
-  "main"          : "index.js",
-  "version"       : "0.0.1"
+  "name": "simple-geoip",
+  "description": "A pure JavaScript fast lookup in maxmind GeoIP database",
+  "scripts": {
+    "build": "webpack",
+    "test": "node test"
+  },
+  "url": "https://github.com/dvv/simple-geoip/",
+  "keywords": [
+    "geo",
+    "geoip",
+    "maxmind",
+    "pure",
+    "javascript"
+  ],
+  "author": "Vladimir Dronnikov <dronnikov@gmail.com>",
+  "contributors": [],
+  "dependencies": [],
+  "main": "bundle.js",
+  "version": "0.0.1",
+  "devDependencies": {
+    "buffer-loader": "0.0.1",
+    "webpack": "^1.13.1"
+  }
 }
