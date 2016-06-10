@@ -3,7 +3,7 @@
 var Path = require("path");
 
 module.exports = {
-  entry: Path.resolve(__dirname, "./lib/index.js"),
+  entry: Path.resolve(__dirname, "./src/index.js"),
   output: {
     library: true,
     libraryTarget: "commonjs2",
